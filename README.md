@@ -3,17 +3,43 @@ PouchDB Plugin Seed
 
 [![Build Status](https://travis-ci.org/robertkeizer/pouchdb-quorum.svg)](https://travis-ci.org/robertkeizer/pouchdb-quorum)
 
+Usage
+--------
+
+This plugin is <strong>not</strong> ready for use!
+
+To use this plugin, include it after `pouchdb.js` in your HTML page:
+
+```html
+<script src="pouchdb.js"></script>
+<script src="pouchdb.quorum.js"></script>
+```
+
+Or to use it in Node.js, just npm install it:
+
+```
+npm install pouchdb-quorum
+```
+
+And then attach it to the `PouchDB` object:
+
+```js
+var PouchDB = require('pouchdb');
+PouchDB.plugin(require('pouchdb-quorum'));
+```
+
+Getting Started
+-------
+
+Working on it.
+
+
 Building
 ----
     npm install
     npm run build
 
 Your plugin is now located at `dist/pouchdb.mypluginname.js` and `dist/pouchdb.mypluginname.min.js` and is ready for distribution.
-
-Getting Started
--------
-
-Working on it.
 
 Testing
 ----
@@ -52,28 +78,3 @@ You can run e.g.
     CLIENT=selenium:phantomjs npm test
 
 This will run the tests automatically and the process will exit with a 0 or a 1 when it's done. Firefox uses IndexedDB, and PhantomJS uses WebSQL.
-
-Usage
---------
-
-Below is some boilerplate you can use for when you want a real README for your users.
-
-To use this plugin, include it after `pouchdb.js` in your HTML page:
-
-```html
-<script src="pouchdb.js"></script>
-<script src="pouchdb.quorum.js"></script>
-```
-
-Or to use it in Node.js, just npm install it:
-
-```
-npm install pouchdb-quorum
-```
-
-And then attach it to the `PouchDB` object:
-
-```js
-var PouchDB = require('pouchdb');
-PouchDB.plugin(require('pouchdb-quorum'));
-```
