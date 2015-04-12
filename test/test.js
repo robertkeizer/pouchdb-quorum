@@ -38,12 +38,12 @@ function tests(dbName, dbType) {
 	var db;
 
 	beforeEach(function () {
-		db = new Pouch(dbName);
+		db = new Pouch(dbName, {"quorum": "foo"});
 		return db;
 	});
 
 	afterEach(function () {
-		return Pouch.destroy(dbName);
+		return db.destroy();
 	});
 
 	describe(dbType + ": quorum test suite", function () {
@@ -61,6 +61,16 @@ function tests(dbName, dbType) {
 				db.quorumStatus().then(function (response) {
 					assert.equal(typeof(response), "object");
 					cb();
+				});
+			});
+		});
+
+		describe("put", function () {
+			it("executes", function (cb) {
+				db.put({"foo": "bar"}, "foobar").then(function () {
+					cb();
+				}, function (err) {
+					return cb(err);
 				});
 			});
 		});
