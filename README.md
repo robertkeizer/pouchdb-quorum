@@ -1,12 +1,12 @@
-PouchDB Plugin Seed
+PouchDB Quorum Plugin
 =====
 
 [![Build Status](https://travis-ci.org/robertkeizer/pouchdb-quorum.svg)](https://travis-ci.org/robertkeizer/pouchdb-quorum)
 
+This pulgin is <strong>not</strong> ready for use! It is still actively being developed.
+
 Usage
 --------
-
-This plugin is <strong>not</strong> ready for use!
 
 To use this plugin, include it after `pouchdb.js` in your HTML page:
 
@@ -27,12 +27,6 @@ And then attach it to the `PouchDB` object:
 var PouchDB = require('pouchdb');
 PouchDB.plugin(require('pouchdb-quorum'));
 ```
-
-Getting Started
--------
-
-Working on it.
-
 
 Building
 ----
