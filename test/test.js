@@ -48,21 +48,20 @@ function tests(dbName, dbType) {
 
 	describe(dbType + ": quorum test suite", function () {
 
-		it("should have .configureQuorum defined", function () {
-			assert.equal(typeof(db.configureQuorum), "function");
+		describe("Basics", function () {
+
+			it("should have .quorumStatus defined", function () {
+				assert.equal(typeof(db.quorumStatus), "function");
+			});
 		});
 
-		it("should have .startQuorum defined", function () {
+		describe("quorumStatus", function () {
 			
-		});
-
-		it("should have .stopQuorum defined", function () {
-			
-		});
-
-		it("should have .quorumStatus", function () {
-			return db.quorumStatus().then(function (response) {
-				return typeof(response) === "object";
+			it("should return an object", function (cb) {
+				db.quorumStatus().then(function (response) {
+					assert.equal(typeof(response), "object");
+					cb();
+				});
 			});
 		});
 	});

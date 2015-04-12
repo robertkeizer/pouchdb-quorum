@@ -2,12 +2,8 @@
 
 var utils = require('./pouch-utils');
 
-exports.configureQuorum = utils.toPromise(function (callback) {
-	callback(null);
-});
-
 exports.quorumStatus = utils.toPromise(function (callback) {
-	callback(null);
+	callback(null, {"foo": "bar"});
 });
 
 /* istanbul ignore next */
