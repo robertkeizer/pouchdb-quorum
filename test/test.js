@@ -18,6 +18,8 @@ chai.use(require("chai-as-promised"));
 chai.should(); // var should = chai.should();
 require('bluebird'); // var Promise = require('bluebird');
 
+var assert = require("assert");
+
 var dbs;
 if (process.browser) {
   dbs = 'testdb' + Math.random() +
@@ -45,6 +47,19 @@ function tests(dbName, dbType) {
 	});
 
 	describe(dbType + ": quorum test suite", function () {
+
+		it("should have .configureQuorum defined", function () {
+			assert.equal(typeof(db.configureQuorum), "function");
+		});
+
+		it("should have .startQuorum defined", function () {
+			
+		});
+
+		it("should have .stopQuorum defined", function () {
+			
+		});
+
 		it("should have .quorumStatus", function () {
 			return db.quorumStatus().then(function (response) {
 				return typeof(response) === "object";
