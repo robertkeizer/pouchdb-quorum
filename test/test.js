@@ -4,10 +4,10 @@
 var Pouch = require('pouchdb');
 
 //
-// your plugin goes here
+// Include pouchdb-quorum
 //
-var helloPlugin = require('../');
-Pouch.plugin(helloPlugin);
+var quorumPlugin = require('../');
+Pouch.plugin(quorumPlugin);
 
 var chai = require('chai');
 chai.use(require("chai-as-promised"));
@@ -33,20 +33,22 @@ dbs.split(',').forEach(function (db) {
 
 function tests(dbName, dbType) {
 
-  var db;
+	var db;
 
-  beforeEach(function () {
-    db = new Pouch(dbName);
-    return db;
-  });
-  afterEach(function () {
-    return Pouch.destroy(dbName);
-  });
-  describe(dbType + ': hello test suite', function () {
-    it('should say hello', function () {
-      return db.sayHello().then(function (response) {
-        response.should.equal('hello');
-      });
-    });
-  });
+	beforeEach(function () {
+		db = new Pouch(dbName);
+		return db;
+	});
+
+	afterEach(function () {
+		return Pouch.destroy(dbName);
+	});
+
+	describe(dbType + ": quorum test suite", function () {
+		it("should have .quorumStatus", function () {
+			return db.quorumStatus().then(function (response) {
+				return typeof(response) === "object";
+			});
+		});
+	});
 }

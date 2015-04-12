@@ -2,15 +2,8 @@
 
 var utils = require('./pouch-utils');
 
-exports.sayHello = utils.toPromise(function (callback) {
-  //
-  // You can use the following code to 
-  // get the pouch or PouchDB objects
-  //
-  // var pouch = this;
-  // var PouchDB = pouch.constructor;
-
-  callback(null, 'hello');
+exports.quorumStatus = utils.toPromise(function (callback) {
+	callback(null, null);
 });
 
 /* istanbul ignore next */
