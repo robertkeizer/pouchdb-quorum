@@ -69,7 +69,13 @@ var QuorumPouch = function (opts, callback) {
 	// This function wraps the actual querying of the independant databases
 	// in quorum logic; It enforces options that are either passed in or
 	// set specifically in the adapter instance.
-	api._runQuorum = function (func, callback) {
+	api._runQuorum = function (func, options, callback) {
+
+		// Lets allow options to be optional.
+		if (!callback && typeof(options) === "function") {
+			callback	= options;
+			options		= { };
+		}
 
 		// We're going to want to run through all the backends
 		// we have..
@@ -101,6 +107,16 @@ var QuorumPouch = function (opts, callback) {
 		// are.
 		_required.then(function (results) {
 
+			// If we've only got one result back ( ie quorum that is only 1 required )
+			if (results.length === 1) {
+				return callback(null, results);
+			}
+
+			// Go through each key in the results and figure out what the 
+			// quorum value is.
+			
+			// Go through and match on the quorum values such that if any one
+			// key fails, the entire key is bad.
 
 			callback(null, results);
 		});
@@ -127,7 +143,7 @@ var QuorumPouch = function (opts, callback) {
 
 				return resolve(info);
 			});
-		}, callback);
+		}, { ignoreKeys: [ "db_name" ] }, callback);
 	});
 
 	/*
