@@ -100,7 +100,7 @@ describe("QuorumPouch", function () {
 
 	it("Returns with no error on valid backend specification.", function (callback) {
 		new quorum.QuorumPouch({ backends: [
-			{ pouchOptions: { "name": "whatnow" } }
+			{ pouchOptions: { "name": "backend-1" } }
 		] }, callback);
 	});
 
@@ -110,8 +110,10 @@ describe("QuorumPouch", function () {
 
 			Pouch.adapter("quorum", quorum.QuorumPouch, false);
 
-			inst = new Pouch({ adapter: "quorum", name: "quorumwhatnow", backends: [
-				{ pouchOptions: { "name": "whatnow" } }
+			inst = new Pouch({ adapter: "quorum", name: "quorum-1", backends: [
+				{ pouchOptions: { "name": "backend-1" } },
+				{ pouchOptions: { "name": "backend-2" } },
+				{ pouchOptions: { "name": "backend-3" } }
 			] });
 
 			inst.then(function () {
@@ -125,14 +127,23 @@ describe("QuorumPouch", function () {
 			assert.equal(typeof(inst.info), "function");
 		});
 
-		it("Returns a promise", function (callback) {
-			var _ret = inst.info();
-			_ret.then(function (c) {
-				console.log("GOTHERE:");
+		it("Returns a promise", function () {
 
-				console.log(c);
-				callback();
-			}, callback);
+			var _ret = inst.info();
+
+			// Lets make sure we have an object back.
+			assert.equal(typeof(_ret), "object");
+
+			// Lets make sure we have a .then function.
+			assert.equal(typeof(_ret.then), "function");
+		});
+
+		it("The promise is valid", function (callback) {
+			var _ret = inst.info();
+			_ret.then(function (results) {
+				console.log(results);
+				callback(null);
+			});
 		});
 	});
 });

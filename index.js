@@ -66,24 +66,47 @@ var QuorumPouch = function (opts, callback) {
 		callback(null, api);
 	}, callback);
 
+	// This function wraps the actual querying of the independant databases
+	// in quorum logic; It enforces options that are either passed in or
+	// set specifically in the adapter instance.
 	api._runQuorum = function (func, callback) {
 
+		// We're going to want to run through all the backends
+		// we have..
 		var _promises = [];
 		api._meta.backends.forEach(function (backend) {
+
+			// We want a single promise when dealing with this particular backend.
 			_promises.push(new utils.Promise(function (resolve, reject) {
+
+				// We want to run a function with some arguments specified.
 				func.call({ }, backend, resolve, reject);
 			}));
 		});
 
-		var _required = BlueBird.some(_promises, 1);
+		// Lets figure out how many backends we need to come back
+		// with a result before we can return. Right now this is done
+		// with a simple half+1 majority, in the future it should be
+		// expanded to include other forms.
+		var minRequired = Math.ceil(api._meta.backends.length / 2);
 
+
+		// We define the minimum required values back, before we can start
+		// checking the results.
+		var _required = BlueBird.some(_promises, minRequired);
+
+		// When we have the minimum we've set we should verify the results;
+		// If we don't have enough results that are equal ( given options and
+		// particulars ), we change what the minimum number of required responses
+		// are.
 		_required.then(function (results) {
-			// Awesome; we got quorum; Lets go ahead and normalize
-			// the data. Also because callback is an optional we check
-			// if it exists;
+
+
 			callback(null, results);
 		});
 
+		// There was some kind of an error; Lets make sure to notify the
+		// callback.
 		_required.catch(callback);
 	};
 	
