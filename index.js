@@ -2,11 +2,31 @@
 
 var utils	= require('./pouch-utils');
 
-exports.QuorumPouch = function () {
+exports.QuorumPouch = function (opts, callback) {
 	var api = this;
 
 	api._meta = null;
+
+	// Help out the developer who doesn't read the docs.
+	if (!callback && typeof(opts) === "function") {
+		return opts("You need to specify some options; Why don't you go read the docs?");
+	}
+
+	// Lets make sure that the options are valid.
+	if (!Array.isArray(opts.backends)) {
+		return callback("backends is a required option.");
+	}
+
+	// Sanity on at least a single backend being specified.
+	if (opts.backends.length === 0) {
+		return callback("you must specify at least a single backend.");
+	}
+
+	// Lets iterate through and create the instance
+	// of pouchdb that are defined in the options.
+
 	
+
 	api.type = function () {
 		return 'quorum';
 	};
@@ -15,6 +35,7 @@ exports.QuorumPouch = function () {
 		callback(null, api._meta.instanceId);
 	});
 	
+	/*
 	api._bulkDocs = function (req, opts, callback) {
 		
 	};
@@ -66,6 +87,13 @@ exports.QuorumPouch = function () {
 	api._destroy = function (callback) {
 		
 	};
+	*/
+
+	// Now that we're all setup lets callback saying
+	// that we're ready.
+	callback(null, api);
+
+
 };
 
 /* istanbul ignore next */

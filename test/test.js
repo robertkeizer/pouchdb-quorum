@@ -20,6 +20,7 @@ require('bluebird'); // var Promise = require('bluebird');
 
 var assert = require("assert");
 
+/*
 var dbs;
 if (process.browser) {
   dbs = 'testdb' + Math.random() +
@@ -32,16 +33,48 @@ dbs.split(',').forEach(function (db) {
   var dbType = /^http/.test(db) ? 'http' : 'local';
   tests(db, dbType);
 });
+*/
 
 var quorum = require("../");
 
-function tests(dbName, dbType) {
-	console.log(assert);
-	console.log(dbType);
-	console.log(dbName);
-	describe("QuorumPouch", function () {
-		it("Exists", function () {
-			assert.ok(quorum.QuorumPouch);
+describe("QuorumPouch", function () {
+	it("Exists", function () {
+		assert.ok(quorum.QuorumPouch);
+	});
+
+	it("Errors if no options are specified", function (callback) {
+		new quorum.QuorumPouch(function (error) {
+			if (!error) {
+				return callback(new Error("No error was returned."));
+			}
+			callback(null);
 		});
 	});
-}
+
+	it("Errors if no backends are specified", function (callback) {
+		new quorum.QuorumPouch({}, function (error) {
+			if (!error) {
+				return callback(new Error("No error was returned."));
+			}
+			callback(null);
+		});
+	});
+
+	it("Errors if backends is not an array", function (callback) {
+		new quorum.QuorumPouch({ backends: "foo" }, function (error) {
+			if (!error) {
+				return callback(new Error("No error was specified."));
+			}
+			callback(null);
+		});
+	});
+
+	it("Errors if backends array is empty.", function (callback) {
+		new quorum.QuorumPouch({ backends: [ ] }, function (error) {
+			if (!error) {
+				return callback(new Error("No error was specified."));
+			}
+			callback(null);
+		});
+	});
+});
