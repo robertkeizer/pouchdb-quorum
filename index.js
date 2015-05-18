@@ -1,11 +1,12 @@
 'use strict';
 
 var utils	= require('./pouch-utils');
+var uuid	= require("uuid");
 
 exports.QuorumPouch = function (opts, callback) {
 	var api = this;
 
-	api._meta = null;
+	api._meta = { backendPromises: [ ], backends: [ ], _instanceId: uuid.v4() };
 
 	// Help out the developer who doesn't read the docs.
 	if (!callback && typeof(opts) === "function") {
@@ -24,7 +25,21 @@ exports.QuorumPouch = function (opts, callback) {
 
 	// Lets iterate through and create the instance
 	// of pouchdb that are defined in the options.
+	opts.backends.forEach(function (backend) {
+		api._meta.backendPromises.push(new utils.Promise(function (resolve, reject) {
+			console.log("I have backend of ");
+			console.log(backend);
+			console.log(reject);
+			resolve(null);
+		}));
+	});
 
+	// Wait for all the backends to start up; If they do, lets set them
+	// instance wide, if they error, so should we.
+	utils.Promise.all(api._meta.backendPromises).then(function (backends) {
+		api._meta.backends = backends;
+		callback(null, api);
+	}, callback);
 	
 
 	api.type = function () {
@@ -88,12 +103,6 @@ exports.QuorumPouch = function (opts, callback) {
 		
 	};
 	*/
-
-	// Now that we're all setup lets callback saying
-	// that we're ready.
-	callback(null, api);
-
-
 };
 
 /* istanbul ignore next */
