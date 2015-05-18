@@ -2,6 +2,7 @@
 
 var utils	= require('./pouch-utils');
 var uuid	= require("uuid");
+var PouchDB	= require("pouchdb");
 
 exports.QuorumPouch = function (opts, callback) {
 	var api = this;
@@ -23,14 +24,38 @@ exports.QuorumPouch = function (opts, callback) {
 		return callback("you must specify at least a single backend.");
 	}
 
+	// Because custom adapters could be injected before we start, we should
+	// allow a PouchDB object to be passed in. This allows for 
+	api.PouchDB = opts.PouchDB || PouchDB;
+
 	// Lets iterate through and create the instance
 	// of pouchdb that are defined in the options.
 	opts.backends.forEach(function (backend) {
 		api._meta.backendPromises.push(new utils.Promise(function (resolve, reject) {
-			console.log("I have backend of ");
-			console.log(backend);
-			console.log(reject);
-			resolve(null);
+
+			// Sanity check on if the backend is an object and has 'adapter' specified.
+			if (typeof(backend) !== "object") {
+				return reject("Backend must be an object. Read the docs.");
+			}
+
+			// Allow no options to be specified; If that is the case, an empty
+			// object is used.
+			backend.options = backend.options || { };
+
+			try {
+				var _instance = new api.PouchDB(backend.adapter, backend.options);
+
+				_instance.catch(reject);
+
+				console.log(_instance);
+				console.log("I have backend of ");
+				console.log(backend);
+				console.log(reject);
+				resolve(null);
+
+			}catch (error) {
+				reject(error);
+			}
 		}));
 	});
 

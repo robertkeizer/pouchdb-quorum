@@ -77,4 +77,13 @@ describe("QuorumPouch", function () {
 			callback(null);
 		});
 	});
+
+	it("Errors if backends array object is invalid", function (callback) {
+		new quorum.QuorumPouch({ backends: [ { "foo": "bar" } ]}, function (error) {
+			if (!error) {
+				return callback(new Error("No error was specified."));
+			}
+			callback(null);
+		});
+	});
 });
