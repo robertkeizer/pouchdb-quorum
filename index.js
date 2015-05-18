@@ -3,6 +3,7 @@
 var utils	= require('./pouch-utils');
 var uuid	= require("uuid");
 var PouchDB	= require("pouchdb");
+var BlueBird	= require("bluebird");
 
 var QuorumPouch = function (opts, callback) {
 
@@ -65,29 +66,25 @@ var QuorumPouch = function (opts, callback) {
 		callback(null, api);
 	}, callback);
 
-	api._runQuorum = function (func, args, callback) {
-		var _promises = [ ];
+	api._runQuorum = function (func, callback) {
+
+		var _promises = [];
 		api._meta.backends.forEach(function (backend) {
 			_promises.push(new utils.Promise(function (resolve, reject) {
-				try {
-					var _args = utils.clone(args);
-					_args.push(function () {
-						console.log("I have arguments of ");
-						console.log(arguments);
-						resolve(null);
-					});
-
-					backend[func].apply(backend, _args);
-
-				}catch (error) {
-					reject(error);
-				}
+				func.call({ }, backend, resolve, reject);
 			}));
 		});
 
-		utils.Promise.all(_promises).then(function (results) {
-			return callback(null, results);
-		}, callback);
+		var _required = BlueBird.some(_promises, 1);
+
+		_required.then(function (results) {
+			// Awesome; we got quorum; Lets go ahead and normalize
+			// the data. Also because callback is an optional we check
+			// if it exists;
+			callback(null, results);
+		});
+
+		_required.catch(callback);
 	};
 	
 	api.type = function () {
@@ -99,8 +96,15 @@ var QuorumPouch = function (opts, callback) {
 	});
 	
 	api._info = utils.toPromise(function (callback) {
-		callback(null, {"FOO": "BAR"});
-		//api._runQuorum("info", [ ], callback);
+		api._runQuorum(function (backend, resolve, reject) {
+			backend.info(function (err, info) {
+				if (err) {
+					return reject(err);
+				}
+
+				return resolve(info);
+			});
+		}, callback);
 	});
 
 	/*

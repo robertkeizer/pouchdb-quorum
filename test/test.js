@@ -129,6 +129,7 @@ describe("QuorumPouch", function () {
 			var _ret = inst.info();
 			_ret.then(function (c) {
 				console.log("GOTHERE:");
+
 				console.log(c);
 				callback();
 			}, callback);
