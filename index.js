@@ -33,7 +33,9 @@ exports.QuorumPouch = function (opts, callback) {
 	opts.backends.forEach(function (backend) {
 		api._meta.backendPromises.push(new utils.Promise(function (resolve, reject) {
 
-			// Sanity check on if the backend is an object and has 'adapter' specified.
+			// We don't want any funny business; Bail we if don't get an
+			// object as a backend value in the array.
+	
 			if (typeof(backend) !== "object") {
 				return reject("Backend must be an object. Read the docs.");
 			}
@@ -62,7 +64,6 @@ exports.QuorumPouch = function (opts, callback) {
 		callback(null, api);
 	}, callback);
 	
-
 	api.type = function () {
 		return 'quorum';
 	};

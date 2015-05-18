@@ -78,6 +78,15 @@ describe("QuorumPouch", function () {
 		});
 	});
 
+	it("Errors if backend array value isn't an object", function (callback) {
+		new quorum.QuorumPouch({ backends: [ "foo" ] }, function (error) {
+			if (!error) {
+				return callback(new Error("No error was specified."));
+			}
+			callback(null);
+		});
+	});
+
 	it("Errors if backend fails to start", function (callback) {
 		new quorum.QuorumPouch({ backends: [
 			{ pouchOptions: { "name": "foo", "adapter": "doesntexist" } }
