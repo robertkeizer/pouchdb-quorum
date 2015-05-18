@@ -16,7 +16,7 @@ chai.use(require("chai-as-promised"));
 // more variables you might want
 //
 chai.should(); // var should = chai.should();
-require('bluebird'); // var Promise = require('bluebird');
+require('bluebird');// var Promise = require('bluebird');
 
 var assert = require("assert");
 
@@ -100,7 +100,38 @@ describe("QuorumPouch", function () {
 
 	it("Returns with no error on valid backend specification.", function (callback) {
 		new quorum.QuorumPouch({ backends: [
-			{ pouchOptions: { "adapter": "leveldb", "name": "whatnow" } }
+			{ pouchOptions: { "name": "whatnow" } }
 		] }, callback);
+	});
+
+	describe("info", function () {
+		var inst;
+		before(function (callback) {
+
+			Pouch.adapter("quorum", quorum.QuorumPouch, false);
+
+			inst = new Pouch({ adapter: "quorum", name: "quorumwhatnow", backends: [
+				{ pouchOptions: { "name": "whatnow" } }
+			] });
+
+			inst.then(function () {
+				callback();
+			});
+
+			inst.catch(callback);
+		});
+
+		it("Exists", function () {
+			assert.equal(typeof(inst.info), "function");
+		});
+
+		it("Returns a promise", function (callback) {
+			var _ret = inst.info();
+			_ret.then(function (c) {
+				console.log("GOTHERE:");
+				console.log(c);
+				callback();
+			}, callback);
+		});
 	});
 });

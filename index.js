@@ -4,7 +4,8 @@ var utils	= require('./pouch-utils');
 var uuid	= require("uuid");
 var PouchDB	= require("pouchdb");
 
-exports.QuorumPouch = function (opts, callback) {
+var QuorumPouch = function (opts, callback) {
+
 	var api = this;
 
 	api._meta = { backendPromises: [ ], backends: [ ], _instanceId: uuid.v4() };
@@ -63,6 +64,31 @@ exports.QuorumPouch = function (opts, callback) {
 		api._meta.backends = backends;
 		callback(null, api);
 	}, callback);
+
+	api._runQuorum = function (func, args, callback) {
+		var _promises = [ ];
+		api._meta.backends.forEach(function (backend) {
+			_promises.push(new utils.Promise(function (resolve, reject) {
+				try {
+					var _args = utils.clone(args);
+					_args.push(function () {
+						console.log("I have arguments of ");
+						console.log(arguments);
+						resolve(null);
+					});
+
+					backend[func].apply(backend, _args);
+
+				}catch (error) {
+					reject(error);
+				}
+			}));
+		});
+
+		utils.Promise.all(_promises).then(function (results) {
+			return callback(null, results);
+		}, callback);
+	};
 	
 	api.type = function () {
 		return 'quorum';
@@ -72,6 +98,11 @@ exports.QuorumPouch = function (opts, callback) {
 		callback(null, api._meta.instanceId);
 	});
 	
+	api._info = utils.toPromise(function (callback) {
+		callback(null, {"FOO": "BAR"});
+		//api._runQuorum("info", [ ], callback);
+	});
+
 	/*
 	api._bulkDocs = function (req, opts, callback) {
 		
@@ -82,10 +113,6 @@ exports.QuorumPouch = function (opts, callback) {
 	};
 
 	api._getAttachment = function (attachment, opts, callback) {
-		
-	};
-
-	api._info = function (callback) {
 		
 	};
 
@@ -126,6 +153,12 @@ exports.QuorumPouch = function (opts, callback) {
 	};
 	*/
 };
+
+QuorumPouch.valid = function () {
+	return true;
+};
+
+exports.QuorumPouch = QuorumPouch;
 
 /* istanbul ignore next */
 if (typeof window !== 'undefined' && window.PouchDB) {

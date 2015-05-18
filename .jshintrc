@@ -23,6 +23,8 @@
     "console",
     "describe",
     "beforeEach",
+    "before",
+    "after",
     "afterEach",
     "it",
     "emit"
