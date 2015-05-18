@@ -39,9 +39,9 @@ function tests(dbName, dbType) {
 	console.log(assert);
 	console.log(dbType);
 	console.log(dbName);
-	describe("Adapter", function () {
+	describe("QuorumPouch", function () {
 		it("Exists", function () {
-			console.log(quorum);
+			assert.ok(quorum.QuorumPouch);
 		});
 	});
 }
