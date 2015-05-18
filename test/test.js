@@ -33,46 +33,15 @@ dbs.split(',').forEach(function (db) {
   tests(db, dbType);
 });
 
+var quorum = require("../");
+
 function tests(dbName, dbType) {
-
-	var db;
-
-	beforeEach(function () {
-		db = new Pouch(dbName, {"quorum": "foo"});
-		return db;
-	});
-
-	afterEach(function () {
-		return db.destroy();
-	});
-
-	describe(dbType + ": quorum test suite", function () {
-
-		describe("Basics", function () {
-
-			it("should have .quorumStatus defined", function () {
-				assert.equal(typeof(db.quorumStatus), "function");
-			});
-		});
-
-		describe("quorumStatus", function () {
-			
-			it("should return an object", function (cb) {
-				db.quorumStatus().then(function (response) {
-					assert.equal(typeof(response), "object");
-					cb();
-				});
-			});
-		});
-
-		describe("put", function () {
-			it("executes", function (cb) {
-				db.put({"foo": "bar"}, "foobar").then(function () {
-					cb();
-				}, function (err) {
-					return cb(err);
-				});
-			});
+	console.log(assert);
+	console.log(dbType);
+	console.log(dbName);
+	describe("Adapter", function () {
+		it("Exists", function () {
+			console.log(quorum);
 		});
 	});
 }
