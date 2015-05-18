@@ -39,16 +39,16 @@ exports.QuorumPouch = function (opts, callback) {
 			}
 
 			// Allow no options to be specified; If that is the case, an empty
-			// object is used.
-			backend.options = backend.options || { };
-
-			// Sanity check on the adapter; We want to force explicit adapters.
-			if (!backend.adapter) {
-				return reject("The adapter must be specified explicitly.");
-			}
+			// object is used; Pouch goes to work and does whatever it wants.
+			backend.pouchOptions = backend.pouchOptions || { };
 
 			try {
-				return new api.PouchDB(backend.adapter, backend.options);
+				var _instance = new api.PouchDB(backend.pouchOptions);
+				_instance.then(function () {
+					resolve(_instance);
+				}, function (error) {
+					reject(error);
+				});
 			}catch (error) {
 				reject(error);
 			}

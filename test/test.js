@@ -78,12 +78,20 @@ describe("QuorumPouch", function () {
 		});
 	});
 
-	it("Errors if backends array object is invalid", function (callback) {
-		new quorum.QuorumPouch({ backends: [ { "foo": "bar" } ]}, function (error) {
+	it("Errors if backend fails to start", function (callback) {
+		new quorum.QuorumPouch({ backends: [
+			{ pouchOptions: { "name": "foo", "adapter": "doesntexist" } }
+		] }, function (error) {
 			if (!error) {
 				return callback(new Error("No error was specified."));
 			}
 			callback(null);
 		});
+	});
+
+	it("Returns with no error on valid backend specification.", function (callback) {
+		new quorum.QuorumPouch({ backends: [
+			{ pouchOptions: { "adapter": "leveldb", "name": "whatnow" } }
+		] }, callback);
 	});
 });
