@@ -32,7 +32,7 @@
     "min": "uglifyjs dist/pouchdb.quorum.js -mc > dist/pouchdb.quorum.min.js",
     "dev": "browserify test/test.js > test/test-bundle.js && npm run dev-server",
     "dev-server": "./bin/dev-server.js",
-    "coverage": "npm test --coverage && istanbul check-coverage --lines 100 --function 100 --statements 100 --branches 100"
+    "coverage": "npm test --coverage && istanbul check-coverage --lines 85 --function 85 --statements 85 --branches 85"
   },
   "dependencies": {
     "lie": "^2.6.0",
