@@ -112,8 +112,47 @@ var QuorumPouch = function (opts, callback) {
 				return callback(null, results);
 			}
 
+			var makeArray = function (obj, prefix) {
+				prefix = prefix || "";
+				if (prefix && prefix[prefix.length - 1] !== '.') {
+					prefix += ".";
+				}
+
+				var _return = [ ];
+				Object.keys(obj).forEach(function (key) {
+					if (Array.isArray(obj[key])) {
+						makeArray(obj[key], prefix + key).forEach(function (toPush) {
+							_return.push(toPush);
+						});
+					} else if (typeof(obj[key]) === 'object') {
+						makeArray(obj[key], prefix + key).forEach(function (toPush) {
+							_return.push(toPush);
+						});
+					} else {
+						_return.push({ "path": prefix + key, "value": obj[key]});
+					}
+				});
+				return _return;
+			};
+
+			console.log(makeArray({
+				"foo": "bar",
+				"complex": { "objects": { "are": "fun" } },
+				"ahha": [ "they", "meh" ] 
+			}));
+
+
+			/*
+
 			// Go through each key in the results and figure out what the 
 			// quorum value is.
+			results.forEach(function (result) {
+
+				console.log(makeArray(result));
+
+				//console.log(giveMeArray(result, []));
+			});
+			*/
 			
 			// Go through and match on the quorum values such that if any one
 			// key fails, the entire key is bad.

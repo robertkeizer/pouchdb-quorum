@@ -141,8 +141,7 @@ describe("QuorumPouch", function () {
 		it("The promise is valid", function (callback) {
 			var _ret = inst.info();
 			_ret.then(function (results) {
-				console.log(results);
-				callback(null);
+				callback(null, results);
 			});
 		});
 	});
