@@ -135,29 +135,42 @@ var QuorumPouch = function (opts, callback) {
 				return _return;
 			};
 
-			console.log(makeArray({
-				"foo": "bar",
-				"complex": { "objects": { "are": "fun" } },
-				"ahha": [ "they", "meh" ] 
-			}));
+			// Take the results we've got so far and 
+			// turn the results into a merged object that
+			// contains counts of unique values.
 
-
-			/*
-
-			// Go through each key in the results and figure out what the 
-			// quorum value is.
+			var singleArray = [ ];
 			results.forEach(function (result) {
-
-				console.log(makeArray(result));
-
-				//console.log(giveMeArray(result, []));
+				makeArray(result).forEach(function (what) {
+					singleArray.push(what);
+				});
 			});
-			*/
-			
-			// Go through and match on the quorum values such that if any one
-			// key fails, the entire key is bad.
 
-			callback(null, results);
+			var singleObject = singleArray.reduce(function (a, b) {
+				if (typeof(a[b.path]) === "object") {
+					// Lets see if this value exists; If it
+					// does we want to increment the counter
+					// rather than just set the value.
+					if (typeof(a[b.path][b.value]) === "object") {
+						a[b.path][b.value]++;
+					} else {
+						a[b.path][b.value] = 1;
+					}
+				} else {
+					a[b.path] = { };
+					a[b.path][b.value] = 1;
+				}
+				return a;
+			}, { });
+
+			// Given the single object go through and match on the quorum
+			// values such that if any one key fails, the entire key is
+			// marked as bad.
+			console.log(singleObject);
+			console.log(options);
+			
+
+			callback(null, singleObject);
 		});
 
 		// There was some kind of an error; Lets make sure to notify the
