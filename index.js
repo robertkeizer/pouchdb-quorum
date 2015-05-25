@@ -77,6 +77,10 @@ var QuorumPouch = function (opts, callback) {
 			options		= { };
 		}
 
+		// Lets make things a little easier for ourselves later on down
+		// the road by setting ignoreKeys if it isn't set.
+		options.ignoreKeys = options.ignoreKeys || [ ];
+
 		// We're going to want to run through all the backends
 		// we have..
 		var _promises = [];
@@ -95,7 +99,6 @@ var QuorumPouch = function (opts, callback) {
 		// with a simple half+1 majority, in the future it should be
 		// expanded to include other forms.
 		var minRequired = Math.ceil(api._meta.backends.length / 2);
-
 
 		// We define the minimum required values back, before we can start
 		// checking the results.
@@ -146,22 +149,48 @@ var QuorumPouch = function (opts, callback) {
 				});
 			});
 
-			var singleObject = singleArray.reduce(function (a, b) {
-				if (typeof(a[b.path]) === "object") {
-					// Lets see if this value exists; If it
-					// does we want to increment the counter
-					// rather than just set the value.
-					if (typeof(a[b.path][b.value]) === "object") {
-						a[b.path][b.value]++;
+			var singleObject = { };
+			try {
+				singleObject = singleArray.reduce(function (a, b) {
+					if (typeof(a[b.path]) === "object") {
+						// Lets see if this value exists; If it
+						// does we want to increment the counter
+						// rather than just set the value.
+						if (typeof(a[b.path][b.value]) === "object") {
+							a[b.path][b.value]++;
+						} else {
+							a[b.path][b.value] = 1;
+
+							// Lets bail if we can no longer make quorum. This
+							// is determined by counting how many different values we
+							// have so far; If nonen of them meet the requirement, and
+							// we now (given the difference in length of results) cannot
+							// make quorum, throw an error.
+							// Also remember to respect options.ignoreKeys
+							//TODO
+						}
 					} else {
+						a[b.path] = { };
 						a[b.path][b.value] = 1;
 					}
-				} else {
-					a[b.path] = { };
-					a[b.path][b.value] = 1;
-				}
-				return a;
-			}, { });
+					return a;
+				}, { });
+
+			} catch (err) {
+				// If we've errored out here it means that 
+				// we've got a key that has more than the
+				// allowable values; We should wait for some
+				// more promises to resolve.
+				console.log("I have error of ");
+				console.log(err);
+				return callback(err);
+			}
+
+			// Lets go through and normalize the damn thing now that
+			// we've verified that we don't have 
+
+			// We know we've got quorum, so we pick the most common one
+			// to set to.
 
 			// Given the single object go through and match on the quorum
 			// values such that if any one key fails, the entire key is
